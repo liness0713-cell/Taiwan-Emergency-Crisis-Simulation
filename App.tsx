@@ -150,8 +150,18 @@ export default function App() {
         })}
       </div>
 
-      <div className="mt-16 text-xs text-slate-600 font-mono">
-        POWERED BY GEMINI 2.0 FLASH & GOOGLE SEARCH
+      <div className="mt-16 flex flex-col items-center space-y-2">
+        <div className="text-xs text-slate-600 font-mono">
+          POWERED BY GEMINI 2.5 FLASH & GOOGLE SEARCH
+        </div>
+        <a 
+          href="https://my-portfolio-beige-five-56.vercel.app/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-xs text-slate-600 font-mono hover:text-white transition-colors"
+        >
+          千葉２狗 🐶
+        </a>
       </div>
     </div>
   );
