@@ -4,12 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply bg-slate-900 text-slate-200;
-  }
-}
-
 /* Custom scrollbar for terminal feel */
 ::-webkit-scrollbar {
   width: 8px;
