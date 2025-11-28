@@ -14,14 +14,16 @@ export interface TrilingualText {
 export interface Choice {
   id: string;
   text: TrilingualText;
-  type: 'DIPLOMATIC' | 'MILITARY' | 'ECONOMIC';
+  type: 'DIPLOMATIC' | 'MILITARY' | 'ECONOMIC' | 'NUCLEAR' | 'CLANDESTINE';
 }
 
 export interface GameScenario {
   title: TrilingualText;
   description: TrilingualText;
+  newsHeadline: TrilingualText; // New: Trilingual breaking news
   choices: Choice[];
-  newsSummary?: string; // Internal use for context
+  visualTheme: 'WAR_ROOM' | 'OCEAN' | 'CYBER' | 'DIPLOMACY' | 'CHAOS'; // For background rendering
+  newsSummary?: string; // Internal context
 }
 
 export interface TurnResult {

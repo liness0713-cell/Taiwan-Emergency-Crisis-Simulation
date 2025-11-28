@@ -57,19 +57,26 @@ export const generateScenario = async (
   turn: number,
   tension: number
 ): Promise<GameScenario> => {
+  // Logic to allow Nuclear option
+  const allowNuclear = tension > 85;
+  
   const prompt = `
     You are a game master for a high-stakes geopolitical thriller game called "Taiwan Emergency".
-    The tone should be urgent, serious, and dramatic.
+    The tone should be urgent, serious, and cinematic.
     
     Current Context:
     - Player Faction: ${faction}
-    - Global Tension: ${tension}/100
+    - Global Tension: ${tension}/100 (If > 90, war is imminent)
     - Turn: ${turn}
-    - Recent Situation: ${newsSummary}
+    - Input Data: ${newsSummary}
 
     Task:
-    Generate a fictional but plausible crisis scenario based on the news above.
-    The output MUST be valid JSON matching the schema below.
+    Generate a crisis scenario. 
+    1. Create a "Breaking News" headline in 3 languages.
+    2. Create a Scenario Title and Description.
+    3. Select a "visualTheme" from: 'WAR_ROOM', 'OCEAN', 'CYBER', 'DIPLOMACY', 'CHAOS'.
+    4. Provide 3 standard choices (DIPLOMATIC, MILITARY, ECONOMIC).
+    ${allowNuclear ? '5. CRITICAL: Tension is high. You MAY provide a 4th hidden choice with type "NUCLEAR" or "CLANDESTINE" that is extreme.' : ''}
     
     IMPORTANT for Japanese ("ja"):
     You MUST use HTML <ruby> tags for difficult Kanji. 
@@ -77,12 +84,12 @@ export const generateScenario = async (
     
     JSON Schema:
     {
+      "newsHeadline": { "zh": "...", "en": "BREAKING: ...", "ja": "..." },
       "title": { "zh": "...", "en": "...", "ja": "..." },
       "description": { "zh": "...", "en": "...", "ja": "..." },
+      "visualTheme": "WAR_ROOM",
       "choices": [
-        { "id": "A", "text": { "zh": "...", "en": "...", "ja": "..." }, "type": "DIPLOMATIC" },
-        { "id": "B", "text": { "zh": "...", "en": "...", "ja": "..." }, "type": "MILITARY" },
-        { "id": "C", "text": { "zh": "...", "en": "...", "ja": "..." }, "type": "ECONOMIC" }
+        { "id": "A", "text": { "zh": "...", "en": "...", "ja": "..." }, "type": "DIPLOMATIC" }
       ]
     }
   `;
@@ -97,15 +104,15 @@ export const generateScenario = async (
 
   try {
     const data = JSON.parse(cleanJson(response.text || ""));
-    // Inject the source news summary back into the object so the UI can display it
     return { ...data, newsSummary } as GameScenario;
   } catch (e) {
     console.error("Failed to parse scenario JSON", e);
-    // Fallback scenario
     return {
       title: { zh: "系统错误", en: "System Error", ja: "システム<ruby>エラー<rt>error</rt></ruby>" },
       description: { zh: "无法生成场景。", en: "Could not generate scenario.", ja: "<ruby>生成<rt>せいせい</rt></ruby>できませんでした。" },
+      newsHeadline: { zh: "连接丢失", en: "CONNECTION LOST", ja: "<ruby>接続<rt>せつぞく</rt></ruby>が<ruby>切<rt>き</rt></ruby>れました" },
       choices: [],
+      visualTheme: 'CYBER',
       newsSummary: "Data corrupted."
     };
   }
@@ -128,10 +135,10 @@ export const resolveTurnAction = async (
     Current Stats: Tension ${currentStats.tension}, Economy ${currentStats.economy}, Support ${currentStats.support}.
 
     Task:
-    Determine the outcome. 
+    Determine the outcome.
+    - If type is NUCLEAR, Tension becomes 100 instantly, Economy drops to 0.
     - If choice is aggressive, increase Tension.
-    - If choice is expensive, decrease Economy.
-    - If choice is unpopular, decrease Support.
+    - Include random events (e.g., "Market crash", "Typhoon", "Spy scandal") in the description to add flavor.
     
     Output JSON:
     {
@@ -143,7 +150,7 @@ export const resolveTurnAction = async (
         "support": number
       }
     }
-    Again, use <ruby> tags for Japanese Kanji in the outcome description.
+    Again, use <ruby> tags for Japanese Kanji.
   `;
 
   const response = await ai.models.generateContent({
@@ -154,6 +161,5 @@ export const resolveTurnAction = async (
 
   const data = JSON.parse(cleanJson(response.text || "{}"));
   
-  // Normalize stats to be additive changes
   return data as TurnResult;
 };
