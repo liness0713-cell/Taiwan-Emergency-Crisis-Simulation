@@ -129,6 +129,13 @@ export default function App() {
     return VISUAL_THEMES[gameState.currentScenario.visualTheme] || VISUAL_THEMES.CYBER;
   };
 
+  // Ambient alert effect based on tension
+  const getAlertOverlay = () => {
+    if (gameState.tension >= 90) return "animate-pulse bg-red-900/30";
+    if (gameState.tension >= 70) return "bg-red-900/10";
+    return "";
+  };
+
   const renderFactionSelection = () => (
     <div className="relative flex flex-col items-center justify-center min-h-screen p-4 animate-fade-in overflow-hidden">
       {/* Background with overlay */}
@@ -237,7 +244,11 @@ export default function App() {
       
       {/* Dynamic Background Layer */}
       <div className={`fixed inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out opacity-20 ${getBackgroundClass()}`} />
-      <div className="fixed inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/80 pointer-events-none" />
+      
+      {/* Tension Alert Overlay */}
+      <div className={`fixed inset-0 pointer-events-none z-0 transition-colors duration-1000 ${getAlertOverlay()}`}></div>
+
+      <div className="fixed inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/80 pointer-events-none z-0" />
 
       {/* LEFT: STATUS & INTEL */}
       <aside className="w-full md:w-80 bg-slate-900/90 backdrop-blur-md border-r border-slate-800 flex flex-col z-20 shadow-2xl">
@@ -245,7 +256,9 @@ export default function App() {
           <h2 className="text-xl font-bold text-white flex items-center gap-3">
             <span className="text-3xl filter drop-shadow-lg">{gameState.selectedFaction && FACTION_DATA[gameState.selectedFaction].flag}</span>
             <div className="flex flex-col">
-              <span className="font-mono tracking-widest text-red-500 font-bold">DEFCON {Math.max(1, 5 - Math.floor(gameState.tension / 25))}</span>
+              <span className={`font-mono tracking-widest font-bold ${gameState.tension > 80 ? 'text-red-500 animate-pulse' : 'text-emerald-500'}`}>
+                DEFCON {Math.max(1, 5 - Math.floor(gameState.tension / 25))}
+              </span>
               <span className="text-[10px] text-slate-500 font-mono">COMMAND TERMINAL</span>
             </div>
           </h2>
@@ -347,16 +360,19 @@ export default function App() {
               {gameState.currentScenario && gameState.gameStatus === 'PLAYING' && (
                 <div className="animate-fade-in-up">
                   
-                  {/* Breaking News Ticker */}
-                  <div className="mb-6 bg-red-950/40 border-y border-red-900/50 backdrop-blur-sm overflow-hidden relative">
+                  {/* Breaking News Section with Ticker */}
+                  <div className="mb-6 bg-red-950/40 border-y border-red-900/50 backdrop-blur-sm overflow-hidden relative shadow-[0_0_15px_rgba(255,0,0,0.1)]">
                     <div className="absolute top-0 left-0 w-1 h-full bg-red-600 animate-pulse"></div>
                     <div className="p-4 pl-6">
-                      <div className="flex items-center gap-3 mb-2">
+                      <div className="flex items-center gap-3 mb-4">
                         <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
                         <span className="text-red-500 font-mono text-xs tracking-[0.2em] font-bold uppercase">Breaking News</span>
+                        <div className="h-px bg-red-900 flex-1"></div>
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-xl md:text-2xl font-black text-white tracking-tight leading-none">
+                      
+                      {/* Main Headline */}
+                      <div className="space-y-2 mb-6">
+                        <p className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none drop-shadow-md">
                             {gameState.currentScenario.newsHeadline.zh}
                         </p>
                          <p 
@@ -367,6 +383,27 @@ export default function App() {
                             {gameState.currentScenario.newsHeadline.en}
                         </p>
                       </div>
+
+                      {/* Live Ticker Feed */}
+                      {gameState.currentScenario.newsTicker && gameState.currentScenario.newsTicker.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-red-900/30">
+                          <div className="text-[10px] text-red-400 font-mono mb-2 uppercase tracking-widest">Live Updates</div>
+                          <div className="space-y-3">
+                            {gameState.currentScenario.newsTicker.map((item, idx) => (
+                              <div key={idx} className="flex gap-3 text-sm opacity-90 hover:opacity-100 transition-opacity">
+                                <span className="font-mono text-red-500 text-xs mt-1">
+                                  {new Date().getHours()}:{String(new Date().getMinutes() - idx * 12).padStart(2, '0')}
+                                </span>
+                                <div className="space-y-0.5">
+                                  <div className="text-slate-200 font-medium">{item.zh}</div>
+                                  <div className="text-yellow-100/70 text-xs font-serif" dangerouslySetInnerHTML={{ __html: item.ja }}></div>
+                                  <div className="text-slate-500 text-[10px] font-mono uppercase">{item.en}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   

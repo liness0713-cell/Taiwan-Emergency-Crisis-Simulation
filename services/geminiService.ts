@@ -73,10 +73,13 @@ export const generateScenario = async (
     Task:
     Generate a crisis scenario. 
     1. Create a "Breaking News" headline in 3 languages.
-    2. Create a Scenario Title and Description.
-    3. Select a "visualTheme" from: 'WAR_ROOM', 'OCEAN', 'CYBER', 'DIPLOMACY', 'CHAOS'.
-    4. Provide 3 standard choices (DIPLOMATIC, MILITARY, ECONOMIC).
-    ${allowNuclear ? '5. CRITICAL: Tension is high. You MAY provide a 4th hidden choice with type "NUCLEAR" or "CLANDESTINE" that is extreme.' : ''}
+    2. Create 3 short "Live Ticker" updates (newsTicker) reflecting real-time events.
+       Examples: "Nikkei Index drops 5%", "US Carrier Group Ronald Reagan entering South China Sea", "Protests erupt in Taipei".
+       These should be atmospheric and provide "real-time" context.
+    3. Create a Scenario Title and Description.
+    4. Select a "visualTheme" from: 'WAR_ROOM', 'OCEAN', 'CYBER', 'DIPLOMACY', 'CHAOS'.
+    5. Provide 3 standard choices (DIPLOMATIC, MILITARY, ECONOMIC).
+    ${allowNuclear ? '6. CRITICAL: Tension is high. You MAY provide a 4th hidden choice with type "NUCLEAR" or "CLANDESTINE" that is extreme.' : ''}
     
     IMPORTANT for Japanese ("ja"):
     You MUST use HTML <ruby> tags for difficult Kanji. 
@@ -85,6 +88,11 @@ export const generateScenario = async (
     JSON Schema:
     {
       "newsHeadline": { "zh": "...", "en": "BREAKING: ...", "ja": "..." },
+      "newsTicker": [
+        { "zh": "...", "en": "...", "ja": "..." },
+        { "zh": "...", "en": "...", "ja": "..." },
+        { "zh": "...", "en": "...", "ja": "..." }
+      ],
       "title": { "zh": "...", "en": "...", "ja": "..." },
       "description": { "zh": "...", "en": "...", "ja": "..." },
       "visualTheme": "WAR_ROOM",
@@ -111,6 +119,7 @@ export const generateScenario = async (
       title: { zh: "系统错误", en: "System Error", ja: "システム<ruby>エラー<rt>error</rt></ruby>" },
       description: { zh: "无法生成场景。", en: "Could not generate scenario.", ja: "<ruby>生成<rt>せいせい</rt></ruby>できませんでした。" },
       newsHeadline: { zh: "连接丢失", en: "CONNECTION LOST", ja: "<ruby>接続<rt>せつぞく</rt></ruby>が<ruby>切<rt>き</rt></ruby>れました" },
+      newsTicker: [],
       choices: [],
       visualTheme: 'CYBER',
       newsSummary: "Data corrupted."

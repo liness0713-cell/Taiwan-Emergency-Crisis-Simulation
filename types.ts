@@ -20,7 +20,8 @@ export interface Choice {
 export interface GameScenario {
   title: TrilingualText;
   description: TrilingualText;
-  newsHeadline: TrilingualText; // New: Trilingual breaking news
+  newsHeadline: TrilingualText; // The main big headline
+  newsTicker: TrilingualText[]; // New: Detailed real-time updates (markets, movements, etc.)
   choices: Choice[];
   visualTheme: 'WAR_ROOM' | 'OCEAN' | 'CYBER' | 'DIPLOMACY' | 'CHAOS'; // For background rendering
   newsSummary?: string; // Internal context
