@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { FactionId, GameScenario, TurnResult } from '../types';
 
 // Initialize Gemini Client
@@ -96,7 +96,7 @@ export const generateScenario = async (
   });
 
   try {
-    const data = JSON.parse(cleanJson(response.text));
+    const data = JSON.parse(cleanJson(response.text || ""));
     // Inject the source news summary back into the object so the UI can display it
     return { ...data, newsSummary } as GameScenario;
   } catch (e) {
@@ -152,7 +152,7 @@ export const resolveTurnAction = async (
     config: { responseMimeType: "application/json" }
   });
 
-  const data = JSON.parse(cleanJson(response.text));
+  const data = JSON.parse(cleanJson(response.text || "{}"));
   
   // Normalize stats to be additive changes
   return data as TurnResult;

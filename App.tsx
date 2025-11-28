@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FactionId, GameState, GameScenario, TurnResult } from './types';
+import { useState, useEffect, useRef } from 'react';
+import { FactionId, GameState } from './types';
 import * as GeminiService from './services/geminiService';
 import TrilingualText from './components/TrilingualText';
 import StatBar from './components/StatBar';
